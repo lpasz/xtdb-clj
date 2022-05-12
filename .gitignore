@@ -11,5 +11,6 @@ pom.xml.asc
 /.prepl-port
 .hgignore
 .hg/
-/.calva/*
-/.clj-kongo/*
+/.calva
+/.clj-kongo
+*.dylib
