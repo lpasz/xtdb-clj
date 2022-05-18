@@ -117,7 +117,7 @@
 (defn easy-ingest [node docs]
   (xt/submit-tx node
                 (vec (for [doc docs]
-                          [::xt/put doc])))
+                       [::xt/put doc])))
   (xt/sync node))
 
 (easy-ingest node [{:xt/id :stock/Pu
@@ -127,7 +127,7 @@
 (xt/entity (xt/db node) :stock/Pu)
 
 ;; I'm done with pluto
-(xt/submit-tx node [[::xt/put 
+(xt/submit-tx node [[::xt/put
                      {:xt/id :manifest
                       :pilot-name "Lucas"
                       :id/rocket "SB002-sol"
@@ -141,3 +141,64 @@
 
 ;; Mercury (see you space cowboy)
 
+(defn easy-ingest [node docs]
+  (xt/submit-tx node
+                (vec (for [doc docs]
+                          [::xt/put doc])))
+  (xt/sync node))
+
+(def data
+  [{:xt/id :commodity/Pu
+    :common-name "Plutonium"
+    :type :element/metal
+    :density 19.816
+    :radioactive true}
+
+   {:xt/id :commodity/N
+    :common-name "Nitrogen"
+    :type :element/gas
+    :density 1.2506
+    :radioactive false}
+
+   {:xt/id :commodity/CH4
+    :common-name "Methane"
+    :type :molecule/gas
+    :density 0.717
+    :radioactive false}
+
+   {:xt/id :commodity/Au
+    :common-name "Gold"
+    :type :element/metal
+    :density 19.300
+    :radioactive false}
+
+   {:xt/id :commodity/C
+    :common-name "Carbon"
+    :type :element/non-metal
+    :density 2.267
+    :radioactive false}
+
+   {:xt/id :commodity/borax
+    :common-name "Borax"
+    :IUPAC-name "Sodium tetraborate decahydrate"
+    :other-names ["Borax decahydrate" "sodium borate" "sodium tetraborate" "disodium tetraborate"]
+    :type :mineral/solid
+    :appearance "white solid"
+    :density 1.73
+    :radioactive false}])
+
+(easy-ingest node data)
+
+(xt/q (xt/db node)
+      '{:find [element]
+        :where [[element :type :element/metal]]})
+
+(=
+ (xt/q (xt/db node) '{:find [element] :where [[element :type :element/metal]]})
+ (xt/q (xt/db node) {:find '[element] :where '[[element :type :element/metal]]})
+ (xt/q (xt/db node) (quote {:find [element] :where [[element :type :element/metal]]})))
+
+(xt/q (xt/db node)
+      '{:find [name]
+        :where [[e :type :element/metal]
+                [e :common-name name]]})
